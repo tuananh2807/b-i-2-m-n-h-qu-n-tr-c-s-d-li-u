@@ -1,0 +1,80 @@
+﻿CREATE TABLE SinhVien (
+    MaSV VARCHAR(13) PRIMARY KEY,
+    HoTen VARCHAR(50) NOT NULL,
+    NgaySinh DATE NOT NULL,
+    CHECK (LEN(MaSV) = 13) -- Đảm bảo MaSV có đúng 13 ký tự
+);
+
+CREATE TABLE Khoa (
+    MaKhoa NVARCHAR(10) PRIMARY KEY,
+    TenKhoa VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE BoMon (
+    MaBM NVARCHAR(10) PRIMARY KEY,
+    TenBM VARCHAR(20) NOT NULL,
+    MaKhoa NVARCHAR(10),
+    FOREIGN KEY (MaKhoa) REFERENCES Khoa(MaKhoa)
+);
+
+CREATE TABLE GiaoVien (
+    MaGV VARCHAR(13) PRIMARY KEY,
+    HoTen VARCHAR(50) NOT NULL,
+    NgaySinh DATE,
+    MaBM NVARCHAR(10),
+    FOREIGN KEY (MaBM) REFERENCES BoMon(MaBM),
+    CHECK (LEN(MaGV) = 13) -- Đảm bảo MaGV có đúng 13 ký tự
+);
+
+CREATE TABLE Lop (
+    MaLop VARCHAR(11) PRIMARY KEY,
+    TenLop VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE GVCN (
+    MaLop VARCHAR(11),
+    MaGV VARCHAR(13),
+    HK VARCHAR(10),
+    PRIMARY KEY (MaLop, MaGV, HK),
+    FOREIGN KEY (MaLop) REFERENCES Lop(MaLop),
+    FOREIGN KEY (MaGV) REFERENCES GiaoVien(MaGV),
+    CHECK (LEN(MaGV) = 13) -- Đảm bảo MaGV có đúng 13 ký tự
+);
+
+CREATE TABLE LopSV (
+    MaLop VARCHAR(11),
+    MaSV VARCHAR(13),
+    ChucVu VARCHAR(20),
+    PRIMARY KEY (MaLop, MaSV),
+    FOREIGN KEY (MaLop) REFERENCES Lop(MaLop),
+    FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV),
+    CHECK (LEN(MaSV) = 13) -- Đảm bảo MaSV có đúng 13 ký tự
+);
+
+CREATE TABLE MonHoc (
+    MaMon NVARCHAR(10) PRIMARY KEY,
+    TenMon VARCHAR(40) NOT NULL,
+    STC INT CHECK (STC > 0 AND STC <= 7) -- Số tín chỉ phải từ 1 đến 7
+);
+
+CREATE TABLE LopHP (
+    MaLopHP VARCHAR(10) PRIMARY KEY,
+    TenLopHP VARCHAR(30) NOT NULL,
+    HK VARCHAR(10),
+    MaMon NVARCHAR(10),
+    MaGV VARCHAR(13),
+    FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon),
+    FOREIGN KEY (MaGV) REFERENCES GiaoVien(MaGV)
+);
+
+CREATE TABLE DKMH (
+    MaLopHP VARCHAR(10),
+    MaSV VARCHAR(13),
+    DiemTP FLOAT CHECK (DiemTP BETWEEN 0 AND 10),
+    DiemThi FLOAT CHECK (DiemThi BETWEEN 0 AND 10),
+    PhanTramThi FLOAT CHECK (PhanTramThi BETWEEN 0 AND 100),
+    PRIMARY KEY (MaLopHP, MaSV),
+    FOREIGN KEY (MaLopHP) REFERENCES LopHP(MaLopHP),
+    FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV),
+    CHECK (LEN(MaSV) = 13) -- Đảm bảo MaSV có đúng 13 ký tự
+);
